@@ -113,8 +113,15 @@ public class ConnectFour {
      */
     public Location getTopOfColumn(int column) {
         // Question 1
-        // TODO
-        
+        String col_str = getColumnAsString(column);
+        if (col_str.length() != 0) {
+            char topCol = col_str.charAt(col_str.length() - 1);
+            if (topCol == 'B') {
+                return Location.BLACK;
+            } else if (topCol == 'R') {
+                return Location.RED;
+            }
+        }
         return Location.EMPTY;
     }
     
@@ -129,8 +136,8 @@ public class ConnectFour {
     public int getHeightOfColumn(int column) {
         // Question 2
         // TODO
-        
-        return 0;
+        String col_str = getColumnAsString(column);
+        return col_str.length();
     }
     
     /**
@@ -143,9 +150,33 @@ public class ConnectFour {
      * 
      * @param column the column for the token
      */
-    public void dropToken(int column) {
+    public void dropToken(int column) throws ColumnFullException {
         // Question 3
         // TODO
+        int count = 0;
+        if (column >= 0 && column < 7) {
+            int tokenHeight = getHeightOfColumn(column);
+            System.out.println(tokenHeight + " token height");
+            if (tokenHeight < 6) {
+                Location chip = null;
+                if (redTurn) {
+                    chip = Location.RED;
+                    redTurn = false;
+                } else if (!redTurn) {
+                    chip = Location.BLACK;
+                    redTurn = true;
+                }
+                System.out.println(count + " builds");
+                // current player determines chip
+                setLocation(tokenHeight, column, chip);
+                count++;
+            } else {
+                throw new ColumnFullException();
+            }
+        } 
+        else {
+            throw new IndexOutOfBoundsException();
+        }
         
     }
     
@@ -170,6 +201,14 @@ public class ConnectFour {
         //       along a column.
         
         // TODO
+        for (int col = 0; col < board[0].length; col++) {
+            String col_str = getColumnAsString(col);
+            if (col_str.contains("BBBB")) {
+                return Result.BLACKWIN;
+            } else if (col_str.contains("RRRR")) {
+                return Result.REDWIN;
+            }
+        }
         
         return Result.NONE;
     }
@@ -191,10 +230,25 @@ public class ConnectFour {
      * @return a string representing the board
      */
     public String toString() {
-        // Question 5
-        // TODO
-        
-        return "";
+        StringBuilder sb = new StringBuilder();
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board[row].length; col++) {
+                sb.append("|");
+                Location cellValue = getLocation(row, col);
+                if (cellValue.equals(Location.BLACK)) {
+                    sb.append("B");
+                } else if (cellValue.equals(Location.RED)) {
+                    sb.append("R");
+                } else {
+                    sb.append(" ");
+                }
+            }
+            sb.append("|\n");
+        }
+        sb.append("---------------");
+        String returnStr = sb.toString();
+        System.out.println(returnStr);
+        return returnStr;
     }
 
 
